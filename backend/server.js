@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
+const csurf = require("csurf");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 
@@ -11,12 +13,32 @@ connectDB();
 
 const app = express();
 
-// Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"], // Sadece frontend domainini ekleyelim
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE",
+  })
+);
 app.use(helmet());
-app.use("/api/auth", authRoutes);
 
+app.use(
+  csurf({
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    },
+  })
+);
+
+app.get("/api/csrf-token", (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("Secure Notes API is running...");
