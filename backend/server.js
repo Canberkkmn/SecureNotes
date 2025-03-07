@@ -6,6 +6,7 @@ const csurf = require("csurf");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
+const notesRoutes = require("./routes/notes");
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.get("/api/csrf-token", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/notes", notesRoutes);
 
 app.get("/", (req, res) => {
   res.send("Secure Notes API is running...");
