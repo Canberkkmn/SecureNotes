@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/api";
 
 const Login = () => {
@@ -7,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,8 +16,9 @@ const Login = () => {
 
     try {
       const response = await loginUser({ email, password });
-      console.log("User logged in:", response.data);
-      localStorage.setItem("token", response.data.token);
+      const token = response.data.token;
+
+      login(token);
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error.response?.data);

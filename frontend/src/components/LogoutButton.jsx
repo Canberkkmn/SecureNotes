@@ -1,17 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const LogoutButton = () => {
-  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  if (!isAuthenticated) return null;
 
   return (
     <button
-      onClick={handleLogout}
-      className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+      onClick={logout}
+      className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 cursor-pointer"
     >
       Logout
     </button>
