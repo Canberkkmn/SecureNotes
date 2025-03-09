@@ -17,14 +17,14 @@ export const AuthProvider = ({ children }) => {
    * Checks authentication status by verifying JWT token.
    */
   const checkAuthStatus = () => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
 
         if (decodedToken.exp * 1000 < Date.now()) {
-          sessionStorage.removeItem("token");
+          localStorage.removeItem("token");
 
           setIsAuthenticated(false);
         } else {
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Error decoding token:", error);
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
     } else {
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
    * @param {string} token - JWT token received from API.
    */
   const login = (token) => {
-    sessionStorage.setItem("token", token);
+    localStorage.setItem("token", token);
 
     checkAuthStatus();
   };
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
    * Logs out the user by removing token and updating state.
    */
   const logout = () => {
-    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
     
     setIsAuthenticated(false);
   };
