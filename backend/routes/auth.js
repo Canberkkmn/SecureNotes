@@ -7,6 +7,23 @@ const sanitizeHtml = require("sanitize-html");
 
 const router = express.Router();
 
+/**
+ * Generates a JWT token for authenticated users.
+ *
+ * @param {string} userId - The user's unique ID.
+ * @returns {string} JWT token valid for 1 hour.
+ */
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+};
+
+/**
+ * @route   POST /api/auth/register
+ * @desc    Register a new user and return a token
+ * @access  Public
+ */
 router.post(
   "/register",
   (req, res, next) => {
@@ -19,9 +36,18 @@ router.post(
     next();
   },
   [
-    body("username").trim().escape(),
-    body("email").isEmail().normalizeEmail(),
-    body("password").isLength({ min: 6 }),
+    body("username")
+      .trim()
+      .escape()
+      .isLength({ min: 3 })
+      .withMessage("Username must be at least 3 characters long"),
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Please provide a valid email"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -43,9 +69,7 @@ router.post(
 
       const user = await User.create({ username, email, password });
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      const token = generateToken(user._id);
 
       res.status(201).json({
         message: "User created successfully!",
@@ -57,16 +81,27 @@ router.post(
         },
       });
     } catch (error) {
+      console.error("Registration Error:", error.message);
       res.status(500).json({ message: "Server error" });
     }
   }
 );
 
+/**
+ * @route   POST /api/auth/login
+ * @desc    Authenticate user and return a token
+ * @access  Public
+ */
 router.post(
   "/login",
   [
-    body("email").isEmail().normalizeEmail(),
-    body("password").isLength({ min: 6 }),
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Please provide a valid email"),
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters long"),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -85,12 +120,11 @@ router.post(
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      const token = generateToken(user._id);
 
       res.json({ token });
     } catch (error) {
+      console.error("Login Error:", error.message);
       res.status(500).json({ message: "Server error" });
     }
   }
