@@ -17,7 +17,7 @@ SecureNotes is a secure note-taking application build with security practices. I
 
 1. **Create a `.env` file in the backend directory and add the following:**
 
-*<admin> must be admin
+* <admin> must be admin
 
 ```env
 MONGO_URI=mongodb+srv://<admin>:<admin>@cluster0.ilita.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
