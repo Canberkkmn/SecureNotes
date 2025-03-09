@@ -5,6 +5,8 @@ const LogoutButton = () => {
 
   if (!isAuthenticated) return null;
 
+  console.log("LogoutButton rendered", isAuthenticated);
+
   return (
     <button
       onClick={logout}

@@ -4,12 +4,12 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!localStorage.getItem("token")
+    !!sessionStorage.getItem("token")
   );
 
   useEffect(() => {
     const handleAuthChange = () => {
-      setIsAuthenticated(!!localStorage.getItem("token"));
+      setIsAuthenticated(!!sessionStorage.getItem("token"));
     };
 
     window.addEventListener("storage", handleAuthChange);
@@ -19,12 +19,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token) => {
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setIsAuthenticated(false);
   };
 
