@@ -16,6 +16,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+
+/**
+ * Security middleware:
+ * - `cors`: Enables cross-origin requests only from allowed domains.
+ * - `helmet`: Adds security headers to protect against vulnerabilities.
+ */
 app.use(
   cors({
     origin: ["http://localhost:3000"],
@@ -25,6 +31,11 @@ app.use(
 );
 app.use(helmet());
 
+/**
+ * CSRF Protection:
+ * - Uses a secure HTTP-only cookie to prevent CSRF attacks.
+ * - Secure only in production.
+ */
 app.use(
   csurf({
     cookie: {
@@ -35,6 +46,9 @@ app.use(
   })
 );
 
+/**
+ * API Route to get the CSRF token.
+ */
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
@@ -42,8 +56,19 @@ app.get("/api/csrf-token", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", notesRoutes);
 
+/**
+ * Root route - API health check.
+ */
 app.get("/", (req, res) => {
   res.send("Secure Notes API is running...");
+});
+
+/**
+ * Global error handler to catch unexpected errors.
+ */
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err.message);
+  res.status(500).json({ message: "Internal Server Error" });
 });
 
 const PORT = process.env.PORT || 5000;
