@@ -1,19 +1,52 @@
 import { useState, useEffect } from "react";
 import { addNote } from "../services/api";
 
-const NoteModal = ({ onClose, onNoteAdded }) => {
+/**
+ * Modal component for adding a new note.
+ *
+ * @component
+ * @param {Object} props
+ * @param {Function} props.onClose - Function to close the modal.
+ * @param {Function} props.onNoteAdded - Callback function to update the notes list.
+ */
+const AddNoteModal = ({ onClose, onNoteAdded }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
+  /**
+   * Handles note submission.
+   * Prevents submission if title or content is empty.
+   *
+   * @param {Event} e - Form submission event.
+   */
   const handleAddNote = async (e) => {
     e.preventDefault();
     setMessage("");
+    setError("");
+
+    if (!title.trim() || !content.trim()) {
+      if (!title.trim() && !content.trim()) {
+        setError("Both title and content are required.");
+        return;
+      }
+
+      if (!title.trim()) {
+        setError("Title is required.");
+        return;
+      }
+
+      if (!content.trim()) {
+        setError("Content is required.");
+        return;
+      }
+    }
 
     try {
       const response = await addNote({ title, content });
@@ -21,13 +54,17 @@ const NoteModal = ({ onClose, onNoteAdded }) => {
       setMessage("Note added successfully!");
       setTitle("");
       setContent("");
-      setTimeout(() => handleClose(), 1000);
+
+      setTimeout(handleClose, 1000);
     } catch (error) {
       console.error("Error adding note:", error.response?.data);
-      setMessage(error.response?.data?.message || "Failed to add note");
+      setError(error.response?.data?.message || "Failed to add note");
     }
   };
 
+  /**
+   * Handles modal close with animation effect.
+   */
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 300);
@@ -35,13 +72,13 @@ const NoteModal = ({ onClose, onNoteAdded }) => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity ${
+      className={`fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-30 backdrop-blur-sm transition-opacity duration-300 ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
       onClick={handleClose}
     >
       <div
-        className={`bg-white p-6 rounded-lg shadow-lg w-96 transform transition-all ${
+        className={`bg-white p-6 rounded-lg shadow-lg w-96 transform transition-all duration-300 ${
           isVisible ? "scale-100 opacity-100" : "scale-90 opacity-0"
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -49,6 +86,8 @@ const NoteModal = ({ onClose, onNoteAdded }) => {
         <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
           Add Note
         </h2>
+
+        {error && <p className="text-center text-red-500">{error}</p>}
 
         {message && <p className="text-center text-green-500">{message}</p>}
 
@@ -85,4 +124,4 @@ const NoteModal = ({ onClose, onNoteAdded }) => {
   );
 };
 
-export default NoteModal;
+export default AddNoteModal;
