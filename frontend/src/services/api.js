@@ -26,3 +26,37 @@ export const loginUser = async (userData) => {
     headers: { "x-csrf-token": csrfToken },
   });
 };
+
+export const addNote = async (noteData) => {
+  const token = sessionStorage.getItem("token");
+  const csrfToken = await getCsrfToken();
+
+  return API.post("/notes", noteData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "x-csrf-token": csrfToken,
+    },
+  });
+};
+
+export const getUserNotes = async () => {
+  const token = sessionStorage.getItem("token");
+
+  return API.get("/notes", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteNote = async (noteId) => {
+  const token = sessionStorage.getItem("token");
+  const csrfToken = await getCsrfToken();
+
+  return API.delete(`/notes/${noteId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "x-csrf-token": csrfToken,
+    },
+  });
+};

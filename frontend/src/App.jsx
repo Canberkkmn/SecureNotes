@@ -14,8 +14,14 @@ import "./App.css";
 
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
-  
+
   return isAuthenticated ? element : <Navigate to="/" />;
+};
+
+const RedirectRoute = ({ element }) => {
+  const { isAuthenticated } = useAuth();
+
+  return isAuthenticated ? <Navigate to="/dashboard" /> : element;
 };
 
 function App() {
@@ -24,8 +30,11 @@ function App() {
       <Router>
         <LogoutButton />
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<RedirectRoute element={<Login />} />} />
+          <Route
+            path="/register"
+            element={<RedirectRoute element={<Register />} />}
+          />
           <Route
             path="/dashboard"
             element={<ProtectedRoute element={<Dashboard />} />}
