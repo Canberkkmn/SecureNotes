@@ -40,6 +40,8 @@ npm install
 npm run dev
 ```
 
+The backend will run on `http://localhost:3000`.
+
 ## API Endpoints
 
 ### Authentication
