@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const sanitizeHtml = require("sanitize-html");
+const rateLimiter = require("../middleware/rateLimit");
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ const generateToken = (userId) => {
  */
 router.post(
   "/register",
+  rateLimiter,
   (req, res, next) => {
     const csrfToken = req.headers["x-csrf-token"];
 
@@ -94,6 +96,7 @@ router.post(
  */
 router.post(
   "/login",
+  rateLimiter,
   [
     body("email")
       .isEmail()

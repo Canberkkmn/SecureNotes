@@ -7,9 +7,9 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
 const notesRoutes = require("./routes/notes");
+const rateLimiter = require("./middleware/rateLimit");
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
@@ -30,6 +30,12 @@ app.use(
   })
 );
 app.use(helmet());
+
+/**
+ * Rate Limiting Middleware:
+ * - Limits requests globally to prevent abuse.
+ */
+app.use(rateLimiter);
 
 /**
  * CSRF Protection:

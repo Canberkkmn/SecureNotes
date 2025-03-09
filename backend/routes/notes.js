@@ -3,6 +3,7 @@ const Note = require("../models/Note");
 const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth");
+const rateLimiter = require("../middleware/rateLimit");
 
 /**
  * Handles asynchronous route execution and catches errors.
@@ -38,6 +39,7 @@ router.get(
 router.post(
   "/",
   authMiddleware,
+  rateLimiter,
   [
     body("title")
       .notEmpty()
@@ -80,6 +82,7 @@ router.post(
 router.delete(
   "/:id",
   authMiddleware,
+  rateLimiter,
   asyncHandler(async (req, res) => {
     const note = await Note.findOneAndDelete({
       _id: req.params.id,
