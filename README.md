@@ -1,6 +1,6 @@
 # SecureNotes
 
-SecureNotes is a secure note-taking application build with security practices. It utilizes **Node.js, Express, and MongoDB** for backend services while ensuring security through JWT authentication (migrating to HttpOnly cookies), CSRF protection, and rate limiting, powered by Reac
+SecureNotes is a secure note-taking application build with security practices. It utilizes **React.js, Node.js, Express, and MongoDB** for backend services while ensuring security through JWT authentication, CSRF protection, and rate limiting.
 
 ## Features
 
