@@ -23,9 +23,10 @@ router.get(
   "/",
   authMiddleware,
   asyncHandler(async (req, res) => {
-    const notes = await Note.find({ userId: req.user.id }).sort({
-      createdAt: -1,
-    });
+    const notes = await Note.find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
 
     res.json(notes);
   })
@@ -87,7 +88,9 @@ router.delete(
     const note = await Note.findOneAndDelete({
       _id: req.params.id,
       userId: req.user.id,
-    });
+    })
+      .lean()
+      .exec();
 
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
